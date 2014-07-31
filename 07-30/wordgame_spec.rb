@@ -1,7 +1,6 @@
 require "minitest/autorun"
 
 require "./wordgame"
-require "pry"
 
 describe WordGame do
 
@@ -42,6 +41,16 @@ describe WordGame do
     assert_equal true, game.won?
   end 
 
-  it "Counts an incorrect guess wrong twice if played twice" 
+  it "Counts an incorrect guess wrong twice if played twice" do
+    game = WordGame.new("word")
+    begin_tries = game.tries_left
+    game.guess("x")
+    after_first_try = game.tries_left
+    game.guess("x")
+    after_second_try = game.tries_left
+    
+    assert_equal begin_tries-1, after_first_try
+    assert_equal after_first_try-1, after_second_try
+  end 
 
 end

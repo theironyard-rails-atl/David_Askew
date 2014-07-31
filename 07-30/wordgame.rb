@@ -1,5 +1,8 @@
 
 class WordGame
+  
+  attr_reader :tries_left
+
   def initialize(_word=nil,_max_guesses=9)
     @word = _word || ["Example","Words","Only","Dictionary"]
 
@@ -7,7 +10,7 @@ class WordGame
 
     @previous_guesses = [] 
     @remaining_letters = @word.split(//) 
- end
+  end
 
   def guess(_word_or_char)
     
@@ -17,7 +20,6 @@ class WordGame
     @previous_guesses << _word_or_char
 
     @remaining_letters.delete(_word_or_char)
-
   end
 
   def won?
@@ -25,7 +27,7 @@ class WordGame
   end
 
   def finished?
-    @won || @tries_left == 0
+    won? || @tries_left == 0
   end
 
 end

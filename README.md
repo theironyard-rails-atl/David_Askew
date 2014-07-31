@@ -1,2 +1,3 @@
-Homework for IronYard ROR July 2014
+Homework and Misc for IronYard ROR July 2014
+
 

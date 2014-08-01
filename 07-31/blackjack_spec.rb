@@ -147,13 +147,18 @@ describe Game do
     
     it "has players" do
         the_dealer = Dealer.new("Dealer's Name")
-        initial_players = Array.new(Player.new("David",100))
+        initial_players = [Player.new("David",100)]
         the_game = Game.new(the_dealer,initial_players)
-        assert_equal 1, the_game.player_count
-        assert_equal initial_players, the_game.players
+        assert_equal 1, the_game.players.size
+        assert_equal initial_players[1], the_game.players[1]
     end
 
-    it "has a dealer"
+    it "has a dealer" do
+        the_dealer = Dealer.new("Dealer")
+        initial_players = [Player.new("David",100)]
+        the_game = Game.new(the_dealer,initial_players)
+        assert_equal the_dealer, the_game.dealer
+    end
 
     it "can be played"
 end

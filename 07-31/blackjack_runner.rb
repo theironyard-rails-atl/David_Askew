@@ -19,6 +19,7 @@ until game_choice == "quit" do
             wager = gets.chomp.to_i
             if(player.stack_value >= wager) && (wager > 0)
                     puts "Great, lets play!"
+                    #the_game = game.new()
             else
                 if(wager == 0)
                     puts "You must wager at least 1 dollar"

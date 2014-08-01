@@ -161,3 +161,12 @@ class Dealer
         cards_dealt
     end
 end
+
+class Game
+    attr_reader :dealer, :players
+
+    def initialize(the_dealer, initial_players)
+        @dealer = the_dealer
+        @players = initial_players
+    end
+end

@@ -3,13 +3,14 @@ require "./survey"
 puts ""
 the_survey = Survey.new
 the_survey.statements.each do |statement|
-    answer_recorded = false
-    while(!answer_recorded)
+    until the_survey.respond(answer)
+    #answer_recorded = false
+    #while(!answer_recorded)
         puts "Statement: #{statement}"
         print "Response > "
         answer = gets.chomp
         puts ""
-        answer_recorded = the_survey.respond(answer)
+        #answer_recorded = the_survey.respond(answer)
     end
 end
 

@@ -17,6 +17,10 @@ describe "Card" do
         assert_equal 14, card2.rank
     end
 
+    it "has a string version" do
+        card1 = Card.new(2, Card::CLUB)
+        assert_equal "2 of Clubs", card1.to_s
+    end
 end
 
 describe "Hand" do
@@ -46,6 +50,27 @@ describe "Hand" do
         the_hand.remove(card_to_remove)
         assert_equal 1, the_hand.cards.size
         assert_equal initial_cards[2], the_hand.cards[1]        
+    end
+
+    it "has a string version" do
+       card1 = Card.new("A", Card::DIAMOND)
+       card2 = Card.new("J", Card::HEART)
+       the_hand = Hand.new([card1,card2])
+       assert_equal "A of Diamonds, J of Hearts", the_hand.to_s
+    end
+
+    it "has a total value" do
+       card1 = Card.new("A", Card::DIAMOND)
+       card2 = Card.new("J", Card::HEART)
+       the_hand = Hand.new([card1,card2])
+       assert_equal 21, the_hand.total_value
+    end
+
+    it "can tell you the number of aces it has" do
+        card1 = Card.new("A", Card::DIAMOND)
+        card2 = Card.new("J", Card::HEART)
+        the_hand = Hand.new([card1,card2])
+        assert_equal 1, the_hand.ace_count 
     end
 
 end
@@ -115,6 +140,15 @@ describe "Player" do
         assert_equal true, player1.receive(100)
     end
 
+    it "can take cards" do
+        player1 = Player.new("David",100)
+        card1 = Card.new("A",Card::HEART)
+        card2 = Card.new("J",Card::SPADE)
+        dealt_hand = Hand.new([card1,card2])
+        player1.take_cards!(dealt_hand)
+        assert_equal 2, player1.hand.cards.size
+    end
+
 end
 
 describe "Dealer" do
@@ -160,5 +194,36 @@ describe Game do
         assert_equal the_dealer, the_game.dealer
     end
 
-    it "can be played"
+    #it "can be played"
+
+    it "can determine a busted hand" do
+        card1 = Card.new("A", Card::DIAMOND)
+        card2 = Card.new("J", Card::HEART)
+        the_hand = Hand.new([card1,card2])
+        assert_equal false, Game.busted_hand?(the_hand) 
+        the_hand.add(Card.new(10, Card::HEART))
+        assert_equal false, Game.busted_hand?(the_hand)
+        the_hand.add(Card.new("A", Card::DIAMOND))
+        assert_equal true, Game.busted_hand?(the_hand)
+    end
+
+    it "can determine if the dealer should play" do
+        card1 = Card.new(8 , Card::DIAMOND)
+        card2 = Card.new("J", Card::HEART)
+        the_hand = Hand.new([card1,card2])
+        assert_equal false, Game.dealer_hits?(the_hand)
+        card3 = Card.new(7 , Card::DIAMOND)
+        card4 = Card.new("J", Card::HEART)
+        next_hand = Hand.new([card3,card4])
+        assert_equal false, Game.dealer_hits?(next_hand)
+        card5 = Card.new(6 , Card::DIAMOND)
+        card6 = Card.new("A", Card::HEART)
+        soft_17 = Hand.new([card5,card6])
+        assert_equal true, Game.dealer_hits?(soft_17)
+        card7 = Card.new(6 , Card::DIAMOND)
+        card8 = Card.new(7 , Card::HEART)
+        small_hand = Hand.new([card7,card8])
+        assert_equal true, Game.dealer_hits?(small_hand)
+    end
+
 end

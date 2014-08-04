@@ -46,7 +46,7 @@ class Card
         case @face_value
         when "A"
             11
-        when "K","Q","J","10"
+        when "K","Q","J",10
             10
         when (2..9)
             @face_value
@@ -67,7 +67,22 @@ class Card
             14
         end
     end
+    
+    def to_s
+        plural = ""
+        
+        if(@suit == Card::SPADE)
+            plural = "Spades"
+        elsif (@suit == Card::HEART)
+            plural = "Hearts"
+        elsif (@suit == Card::DIAMOND)
+            plural = "Diamonds"
+        elsif (@suit == Card::CLUB)
+            plural = "Clubs"
+        end
 
+        "#{@face_value} of #{plural}"
+    end
 end
 
 class Hand
@@ -86,6 +101,32 @@ class Hand
         @cards.delete_if { |card| card == card_to_remove}
     end
 
+    def total_value 
+        total_value = 0
+        @cards.each do |card|
+            total_value += card.value
+        end
+        total_value
+    end
+
+    def ace_count
+        aces = 0 
+        @cards.each do |card|
+            aces += 1 if card.face_value == "A"
+        end
+        aces
+    end
+
+    def to_s
+        string_version = "" 
+        counter = 0
+        @cards.each do |card| 
+            string_version += card.to_s
+            string_version += ", " if counter < @cards.size - 1 
+            counter += 1
+        end
+        string_version
+    end
 end
 
 class Deck
@@ -115,7 +156,7 @@ end
 
 class Player
 
-    attr_reader :name, :stack_value
+    attr_reader :name, :hand, :stack_value
 
     def initialize(_name="Unknown",_initial_money=0)
         @name = _name
@@ -135,6 +176,12 @@ class Player
         @stack_value += _amount
         true
     end
+
+    def take_cards!(_hand)
+        @hand = _hand 
+        true
+    end
+
 end
 
 class Dealer
@@ -168,5 +215,28 @@ class Game
     def initialize(the_dealer, initial_players)
         @dealer = the_dealer
         @players = initial_players
+    end
+
+    def Game.busted_hand?(_hand)
+
+        lowest_possible = _hand.total_value - (_hand.ace_count*10)
+
+        if lowest_possible > 21
+            true
+        else
+            false
+        end 
+    end
+
+    def Game.dealer_hits?(_hand)
+        if _hand.total_value >= 18
+            false
+        elsif _hand.total_value == 17 && _hand.ace_count > 0
+            true
+        elsif _hand.total_value == 17 && _hand.ace_count == 0
+            false
+        else
+            true
+        end
     end
 end

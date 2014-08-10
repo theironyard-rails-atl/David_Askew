@@ -1,7 +1,7 @@
 class Board
   attr_reader :grid
 
-  def initialize
+  def initialize(_grid = [])
       @grid ||= []
   end
 
@@ -11,28 +11,47 @@ class Board
 
 end
 
+class InvalidBoardException < StandardError; end
+
 class AsciiBoard < Board
-  def initialize
-    @grid = Array.new(16,0)
+  def initialize(_grid=Array.new(16,0))
+    @grid = _grid #Array.new(16,0)
 
-    first_num = Random.rand(16) + 1
+    raise InvalidBoardException if @grid.size > 16
+    raise InvalidBoardException if @grid.size.between?(1,15)
 
-    @grid[first_num] = 2
+    if empty?
+      first_num = Random.rand(16) + 1
 
-    if(first_num > 9)
-      second_num = first_num - 5
-    else
-      second_num = first_num + 5
+      @grid[first_num] = 2
+
+      if(first_num > 9)
+        second_num = first_num - 5
+      else
+        second_num = first_num + 5
+      end
+
+      @grid[second_num] = 4
+
     end
 
-    @grid[second_num] = 4
-
     super
+
   end
 
   def full?
    return false if  @grid.include? 0
    return true  if !@grid.include? 0
+  end
+
+  def empty?
+    return true if @grid.count(0) == 16
+    return false
+  end
+
+  def blank?
+    return true if @grid.size == 0
+    return false
   end
 
   def valid_plays?

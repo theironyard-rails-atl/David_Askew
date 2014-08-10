@@ -17,7 +17,8 @@ describe AsciiBoard do
   it "can be displayed" do
     assert_respond_to(AsciiBoard.new, :display_board)
   end
-  it "has a grid of 14 zeros and 2 non-zeros when started" do
+
+  it "has a grid of 14 zeros and 2 non-zeros by default when started" do
     ab = AsciiBoard.new
     assert_equal 14, ab.grid.count(0)
     assert_equal  2, ab.grid.count - ab.grid.count(0)
@@ -26,6 +27,39 @@ describe AsciiBoard do
   it "is not full when the game starts" do
      ab = AsciiBoard.new
      assert_equal false, ab.full?
+  end
+
+  it "is not empty by default when the board is created" do
+    ab = AsciiBoard.new
+    assert_respond_to(ab, :empty?)
+    assert_equal false, ab.empty?
+  end
+
+  it "throws an error when created with a starting grid larger than 16" do
+    assert_raises(InvalidBoardException) do 
+      sample_grid = []
+      17.times do 
+        sample_grid << 0
+      end
+      ab = AsciiBoard.new(sample_grid)
+    end
+  end
+
+  it "throws an error when created with a starting grid between 1 and 15" do
+    assert_raises(InvalidBoardException) { ab = AsciiBoard.new([0,0,0,0,0]) }
+  end
+
+  it "can be empty" do
+    ab = AsciiBoard.new()
+    assert_respond_to(ab, :empty?)
+  end
+
+  it "can be blank" do
+    ab = AsciiBoard.new(Array.new(0))
+    assert_respond_to(ab, :blank?)
+    assert_equal true, ab.blank?
+    ab2 = AsciiBoard.new([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])
+    assert_equal false, ab2.blank?
   end
 
   it "can be shifted" do

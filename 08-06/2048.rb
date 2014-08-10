@@ -1,8 +1,9 @@
 class Board
-  attr_reader :grid
+  attr_reader :grid, :shifts_allowed
 
   def initialize(_grid = [])
       @grid ||= []
+      @shifts_allowed = [:left,:right,:up,:down]
   end
 
   def display_board
@@ -12,6 +13,7 @@ class Board
 end
 
 class InvalidBoardException < StandardError; end
+class InvalidShiftException < StandardError; end
 
 class AsciiBoard < Board
   def initialize(_grid=Array.new(16,0))
@@ -21,7 +23,7 @@ class AsciiBoard < Board
     raise InvalidBoardException if @grid.size.between?(1,15)
 
     if empty?
-      first_num = Random.rand(16) + 1
+      first_num = Random.rand(16) #+ 1
 
       @grid[first_num] = 2
 
@@ -58,7 +60,101 @@ class AsciiBoard < Board
     return true if !full?
   end
 
+  def remaining_spaces
+    return @grid.count(0)
+  end
+
+  def add_random
+    if !full?
+      indexes_of_zero = []
+      @grid.each_index do |index|
+        indexes_of_zero << index if @grid[index] == 0
+      end
+      @grid[indexes_of_zero.sample] = [2,4].sample
+    end
+  end
+
   def shift(direction)
+    raise InvalidShiftException if !shifts_allowed.include?(direction)
+    new_grid = @grid.clone
+
+    if direction == :left
+      row1 = new_grid.slice(0,4)
+      row2 = new_grid.slice(4,4)
+      row3 = new_grid.slice(8,4)
+      row4 = new_grid.slice(12,4)
+      rows = [row1,row2,row3,row4]
+      rows.each do |row|
+        if row.count(0) == 3
+          row[0] = row.max
+          row[1] = 0
+          row[2] = 0
+          row[3] = 0
+        elsif(row.count(0) == 2)
+          new_row = row.select { |num| num > 0 }
+          if(new_row[0] == new_row[1])
+            row[0] = new_row[0] + new_row[1]
+            row[1] = 0
+            row[2] = 0
+            row[3] = 0
+          else
+            row[0] = new_row[0]
+            row[1] = new_row[1]
+          end
+        elsif(row.count(0) == 1)
+          new_row = row.select { |num| num > 0 }
+          if(new_row[0] == new_row[1])
+            row[0] = new_row[0] + new_row[1]
+            row[1] = new_row[2]
+            row[2] = 0
+            row[3] = 0
+          elsif(new_row[1] == new_row[2])
+            row[0] = new_row[0]
+            row[1] = new_row[1] + new_row[2]
+            row[2] = 0
+            row[3] = 0
+          else
+            row[0] = new_row[0]
+            row[1] = new_row[1]
+            row[2] = new_row[2]
+            row[3] = 0
+          end
+        elsif(row.count(0) == 0)
+          new_row = row.select { |num| num > 0 }
+          if(new_row[0]==new_row[1])
+            row[0] = new_row[0] + new_row[1]
+            if(new_row[2] == new_row[3])
+               row[1] = new_row[2] + new_row[3]
+               row[2] = 0
+               row[3] = 0
+            else
+               row[1] = new_row[2]
+               row[2] = new_row[3]
+               row[3] = 0
+            end
+          elsif(new_row[1]==new_row[2])
+            row[0] = new_row[0]
+            row[1] = new_row[1] + new_row[2]
+            row[2] = new_row[3]
+            row[3] = 0
+          elsif(new_row[2]==new_row[3])
+            row[0] = new_row[0]
+            row[1] = new_row[0]
+            row[2] = new_row[2] + new_row[3]
+            row[3] = 0
+          end
+        end
+      end
+      new_grid = row1 + row2 + row3 + row4
+    end
+
+    if new_grid != @grid
+      @grid = new_grid
+      add_random
+      return true
+    else
+      return false
+    end
 
   end
 

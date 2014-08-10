@@ -36,9 +36,9 @@ describe AsciiBoard do
   end
 
   it "throws an error when created with a starting grid larger than 16" do
-    assert_raises(InvalidBoardException) do 
+    assert_raises(InvalidBoardException) do
       sample_grid = []
-      17.times do 
+      17.times do
         sample_grid << 0
       end
       ab = AsciiBoard.new(sample_grid)
@@ -69,10 +69,85 @@ describe AsciiBoard do
     #assert_raises(InvalidShiftException, { ab.shift(1) }
   end
 
-  it "can be shifted left, right, up, and down"
+  it "is full when the grid has sixteen non-zero values" do
+    ab = AsciiBoard.new([2,4,8,16,32,64,128,256,512,1024,2048,1024,512,256,128,64])
+    assert_equal true, ab.full?
+    ab2 = AsciiBoard.new([2,4,8,16,32,64,128,256,512,1024,0,1024,512,256,128,64])
+    assert_equal false, ab2.full?
+  end
 
-  it "is full when the grid has sixteen non-zero values"
+  it "has an internal record of the number of open spaces" do
+    ab = AsciiBoard.new
+    assert_respond_to(ab, :remaining_spaces)
+  end
 
+  it "has 14 remaining spaces when the game starts" do
+    ab = AsciiBoard.new
+    assert_equal 14, ab.remaining_spaces
+  end
+
+  it "can only be shifted left, right, up, and down" do
+    ab = AsciiBoard.new
+    assert_equal ab.shifts_allowed, [:left,:right,:up, :down]
+  end
+
+  it "can be shifted left" do
+    starting_grid = [0,0,0,0,0,0,2,0,4,0,0,0,0,0,0,0]
+    ab = AsciiBoard.new(starting_grid)
+    assert_equal starting_grid, ab.grid
+    #assert_equal true, ab.valid_plays?
+    assert_raises(InvalidShiftException) { ab.shift("foobar") }
+    assert_raises(InvalidShiftException) { ab.shift(:diagonal) }
+    assert_equal true, ab.shift(:left)
+    assert_equal 2, ab.grid[4]
+    assert_equal 4, ab.grid[8]
+    #puts "here #{ab.grid}"
+    assert_equal 13, ab.remaining_spaces
+
+    starting_grid = [0,0,0,0,0,0,2,2,4,0,0,4,0,0,0,0]
+    ab = AsciiBoard.new(starting_grid)
+    assert_equal starting_grid, ab.grid
+    assert_equal 12, ab.remaining_spaces
+    assert_equal true, ab.shift(:left)
+    assert_equal 4, ab.grid[4]
+    assert_equal 8, ab.grid[8]
+    assert_equal 13, ab.remaining_spaces
+
+    starting_grid = [0,0,0,0,0,2,2,2,4,0,4,4,0,0,0,0]
+    ab = AsciiBoard.new(starting_grid)
+    assert_equal starting_grid, ab.grid
+    assert_equal 10, ab.remaining_spaces
+    assert_equal true, ab.shift(:left)
+    assert_equal 4, ab.grid[4]
+    assert_equal 2, ab.grid[5]
+    assert_equal 8, ab.grid[8]
+    assert_equal 4, ab.grid[9]
+    assert_equal 11, ab.remaining_spaces
+
+    starting_grid = [0,0,0,0,2,2,2,2,4,4,4,4,0,0,0,0]
+    ab = AsciiBoard.new(starting_grid)
+    assert_equal starting_grid, ab.grid
+    puts ""
+    puts "here 1 #{ab.grid}"
+    assert_equal 8, ab.remaining_spaces
+    assert_equal true, ab.shift(:left)
+    assert_equal 4, ab.grid[4]
+    assert_equal 4, ab.grid[5]
+    assert_equal 8, ab.grid[8]
+    assert_equal 8, ab.grid[9]
+    puts ""
+    puts "here 2 #{ab.grid}"
+    assert_equal 11, ab.remaining_spaces
+
+  end
+
+  it "can be shifted right"
+
+  it "can be shifted up"
+
+  it "can be shifted down"
+
+  it "has no valid plays when there are none"
 
 end
 

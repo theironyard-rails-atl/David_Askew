@@ -1,0 +1,9 @@
+%html
+  %head
+
+  %body
+    .container
+      %h1="Welcome to my test form! #{params[:text]}"
+
+      %form{:method => "POST"}
+        %input{:name => "text", :placeholder => "Type Text Here"}

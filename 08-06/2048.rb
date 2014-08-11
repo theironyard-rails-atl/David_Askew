@@ -100,6 +100,8 @@ class AsciiBoard < Board
           else
             row[0] = new_row[0]
             row[1] = new_row[1]
+            row[2] = 0
+            row[3] = 0
           end
         elsif(row.count(0) == 1)
           new_row = row.select { |num| num > 0 }
